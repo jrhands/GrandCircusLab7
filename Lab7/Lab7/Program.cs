@@ -12,23 +12,35 @@ namespace Lab7
             bool repeat = false;
             do
             {
-                name = GetValidName();
-                Console.WriteLine(name);
+                do
+                {
+                    name = GetValidName();
+                    Console.WriteLine(name);
+                } while (!IsRepeating());
+                do
+                {
+                    email = GetValidEmail();
+                    Console.WriteLine(email);
+                } while (!IsRepeating());
+                do
+                {
+                    phone = GetValidPhone();
+                    Console.WriteLine(phone);
+                } while (!IsRepeating());
+                do
+                {
+                    date = GetValidDate();
+                    Console.WriteLine(date);
+                } while (!IsRepeating());
 
-                email = GetValidEmail();
-                Console.WriteLine(email);
+                do
+                {
+                    html = GetValidHTML();
+                    Console.WriteLine(html);
+                } while (!IsRepeating());
 
-                phone = GetValidPhone();
-                Console.WriteLine(phone);
-
-                date = GetValidDate();
-                Console.WriteLine(date);
-
-                html = GetValidHTML();
-                Console.WriteLine(html);
-
-                repeat = IsRepeating();
-            } while (repeat);
+                Console.WriteLine("Continue to exit program. Otherwise, restart from the beginning.");
+            } while (!IsRepeating());
             Console.Write("Goodbye! Press enter to close...");
             Console.Read();
         }
@@ -114,10 +126,19 @@ namespace Lab7
             {
                 Console.Write("Please enter a valid HTML element: ");
                 String html = Console.ReadLine();
-                String pattern = @"^<(\w+)\s?[^>]*>.*<\/\1>$";
-                if (Regex.IsMatch(html, pattern)/* && ValidateInternals(html)*/)
+                String pattern = @"^<(\w+)\s?[^>]*>(.*)<\/\1>$";
+                Match match;
+                if (Regex.IsMatch(html, pattern))
                 {
-                    return html;
+                    match = Regex.Match(html, pattern);
+                    if (ValidateInternals(match.Groups[2].Value))
+                    {
+                        return html;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid HTML.");
+                    }
                 }
                 else
                 {
@@ -126,10 +147,27 @@ namespace Lab7
             }
         }
 
-        /*static bool ValidateInternals(String html)
+        static bool ValidateInternals(String internals)
         {
-            String pattern =
-        }*/
+            String pattern = @"(.*?)<(\w+)\s?[^>]*>(.*?)<\/\2>(.*)";
+            Match match;
+            if (Regex.IsMatch(internals, pattern))
+            {
+                match = Regex.Match(internals, pattern);
+                return (ValidateInternals(match.Groups[1].Value) &&
+                    ValidateInternals(match.Groups[3].Value) &&
+                    ValidateInternals(match.Groups[4].Value));
+            }
+            else
+            {
+                pattern = @"<.*?>";
+                if (Regex.IsMatch(internals, pattern))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
 
         static bool IsRepeating()
         {
